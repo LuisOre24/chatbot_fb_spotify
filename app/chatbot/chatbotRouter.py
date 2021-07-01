@@ -28,7 +28,6 @@ class webhook(Resource):
         '''Webhook Messenger Facebook - POST'''
 #        print(self.api.payload)
         payload = self.api.payload
-        print(payload)
         for event in payload['entry']:
             messaging = event['messaging']
             for message in messaging:
@@ -39,8 +38,8 @@ class webhook(Resource):
 
                     postback = message['postback'].get('payload')
                     if postback == '<GET_STARTED_PAYLOAD>':
-                        initial_message(recipient_id=recipient_id)
-                    
+                        initial_message(recipient_id=recipient_id)  
+                    print(message)
                 random_messages(recipient_id=recipient_id)
         return 'Message received', 200
 
@@ -74,19 +73,17 @@ class bot_setup_remove(Resource):
     @chatbot_ns.doc('chatbot_remove_setup')
     def delete(self):
         '''Remove Get Started and Greeting'''
-        delete_request('https://graph.facebook.com/v11.0/me/messenger_profile',
-        params={
-            'access_token' : getenv('FB_PAGE_TOKEN')
-        },
-        headers={
-            'Content-Type' : 'application/json'
-        },
-        data=dumps({
-            'fields' : [
-                'get_started',
-                'greeting'
-            ]
-        })
-        )
+        delete_request('https://graph.facebook.com/v11.0/me/messenger_profile', 
+            params={
+                'access_token': getenv('FB_PAGE_TOKEN')
+            },
+            headers={
+                'Content-Type': 'application/json'
+            },
+            data=dumps({
+                'fields': ['get_started', 'greeting']
+            }))
+
+        return 'Success Deleted', 200
 
 api.add_namespace(chatbot_ns)

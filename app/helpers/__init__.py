@@ -4,7 +4,7 @@ from json import dumps
 
 
 def sender_graph(**kwargs):
-    post('https://graph.facebook.com/v11.0/me/messages',
+    request = post('https://graph.facebook.com/v11.0/me/messages',
         params={
             'access_token': getenv('FB_PAGE_TOKEN')
         },
@@ -16,7 +16,5 @@ def sender_graph(**kwargs):
             'recipient': {
                 'id': kwargs['recipient_id']
             },
-            'message': {
-                'text': kwargs['message']
-            }
+            'message': kwargs['message']
         }))
