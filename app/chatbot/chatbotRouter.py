@@ -4,7 +4,7 @@ from json import dumps
 from requests import post as post_request, delete as delete_request
 from flask_restx import Resource, Namespace
 from app.chatbot.chatbotRequest import ChatbotRequest
-from app.chatbot.chatbotFlow import initial_message, random_messages
+from app.chatbot.chatbotFlow import initial_message, random_messages, color_message
 
 chatbot_ns = Namespace('chatbot', description='webhook messengerr facebook')
 
@@ -28,6 +28,7 @@ class webhook(Resource):
         '''Webhook Messenger Facebook - POST'''
 #        print(self.api.payload)
         payload = self.api.payload
+        print(payload)
         for event in payload['entry']:
             messaging = event['messaging']
             for message in messaging:
@@ -39,8 +40,16 @@ class webhook(Resource):
                     postback = message['postback'].get('payload')
                     if postback == '<GET_STARTED_PAYLOAD>':
                         initial_message(recipient_id=recipient_id)  
-                    print(message)
-                random_messages(recipient_id=recipient_id)
+                if message.get('message') and message['message']:
+                    if message['message'].get('quick_reply'):
+                        quick_reply = message['message'].get('quick_reply')
+                        if quick_reply['payload'] == 'red_payload':
+                            color_message(recipient_id=recipient_id, color='rojo')
+
+                        if quick_reply['payload'] == 'green_payload':
+                            color_message(recipient_id=recipient_id, color='verde')
+                    
+                    random_messages(recipient_id=recipient_id)
         return 'Message received', 200
 
 @chatbot_ns.route('/setup')
