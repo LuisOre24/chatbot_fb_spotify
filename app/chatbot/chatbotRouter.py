@@ -4,7 +4,7 @@ from json import dumps
 from requests import post as post_request, delete as delete_request
 from flask_restx import Resource, Namespace
 from app.chatbot.chatbotRequest import ChatbotRequest
-from app.chatbot.chatbotFlow import initial_message, random_messages, color_message
+from app.chatbot.chatbotFlow import initial_message, music_message, random_messages, search_track
 
 chatbot_ns = Namespace('chatbot', description='webhook messengerr facebook')
 
@@ -31,25 +31,40 @@ class webhook(Resource):
         print(payload)
         for event in payload['entry']:
             messaging = event['messaging']
+            print('first for')
             for message in messaging:
                 recipient_id = message['sender']['id']
+                print('segundo for')
                 if message.get('postback') \
                     and message['postback'] \
                     and message['postback'].get('payload'):
-
+                    print('primer if')
                     postback = message['postback'].get('payload')
                     if postback == '<GET_STARTED_PAYLOAD>':
-                        initial_message(recipient_id=recipient_id)  
-                if message.get('message') and message['message']:
-                    if message['message'].get('quick_reply'):
-                        quick_reply = message['message'].get('quick_reply')
-                        if quick_reply['payload'] == 'red_payload':
-                            color_message(recipient_id=recipient_id, color='rojo')
+                        print('segundo if')
+                        initial_message(recipient_id=recipient_id) 
 
-                        if quick_reply['payload'] == 'green_payload':
-                            color_message(recipient_id=recipient_id, color='verde')
+                if message.get('message') and message['message']:
+                    print(message)
+                    if message['message'].get('quick_reply'):
+                        print('cuarto if')
+                        quick_reply = message['message'].get('quick_reply')
+                        if quick_reply['payload'] == 'frase_payload':
+                            random_messages(recipient_id=recipient_id)
+                            initial_message(recipient_id=recipient_id)
+
+                        if quick_reply['payload'] == 'spotify_payload':
+                            #print('musica a buscar')
+                            music_message(recipient_id=recipient_id)
+                            
+                    if message['message'].get('text') and not message['message'].get('quick_reply'):
+                        track = message['message'].get('text')
+                        print(track)
+                        search_track(search=track, recipient_id=recipient_id)
+                        initial_message(recipient_id=recipient_id)
+
                     
-                    random_messages(recipient_id=recipient_id)
+                    
         return 'Message received', 200
 
 @chatbot_ns.route('/setup')

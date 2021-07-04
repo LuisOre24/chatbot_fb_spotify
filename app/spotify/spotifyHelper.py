@@ -26,18 +26,18 @@ def auth_token():
     }
 
     response = post(AUTH_ENDPOINT, headers=headers, data=data)
-    print(response.json())
     return response.json()['access_token']
 
 
-def search_track(track):
+def spotify_track(track):
     headers = {
         'Authorization' : f'Bearer {auth_token()}'
     }
 
     params = {
         'q' : track,
-        'type' : 'track'
+        'type' : 'track',
+        'limit' : 7
     }
 
     response = get(SEARCH_ENDPOINT, headers=headers, params=params)
@@ -50,7 +50,8 @@ def search_artist(artist):
 
     params = {
         'q' : artist,
-        'type' : 'artist'
+        'type' : 'artist',
+        'limit' : 5
     }
 
     response = get(SEARCH_ENDPOINT, headers=headers, params=params)

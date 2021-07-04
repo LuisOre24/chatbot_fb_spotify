@@ -1,5 +1,5 @@
 from app import app
-from app.spotify.spotifyHelper import auth_token, search_artist, search_track
+from app.spotify.spotifyHelper import auth_token, search_artist
 
 
 @app.route('/spotify')
@@ -9,7 +9,7 @@ def spotify():
 
 @app.route('/spotify/search_track')
 def searchTrack():
-    return search_track('young wild and free')
+    pass
 
 @app.route('/spotify/search_artist')
 def searchArtist():
